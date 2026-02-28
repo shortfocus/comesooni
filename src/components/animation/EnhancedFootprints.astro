@@ -1,0 +1,83 @@
+<div
+  id="footprint-container"
+  class="fixed inset-0 pointer-events-none z-[9999]"
+>
+</div>
+
+<script>
+  import { gsap } from "gsap";
+  import { initLenis } from "../../scripts/lenis-init";
+
+  // 1. 여기서 직접 실행하지 말고, 이미 생성된 lenis 인스턴스를 가져옵니다.
+  // Layout.astro에서 이미 호출했으므로, 여기서는 구독만 합니다.
+  const lenis = initLenis();
+
+  const container = document.querySelector("#footprint-container");
+  let lastScrollY = 0;
+  let isLeftStep = true;
+  const STEP_DISTANCE = 150;
+
+  // 색상을 노란색으로 고정하고 drop-shadow를 강화했습니다.
+  const footprintSVG = `
+    <svg viewBox="0 0 30 30" style="width: 45px; height: 45px; color: #FBBF24; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.8));">
+      <circle cx="15" cy="22" r="6" fill="currentColor"/>
+      <circle cx="7" cy="12" r="4" fill="currentColor"/>
+      <circle cx="15" cy="7" r="4.5" fill="currentColor"/>
+      <circle cx="23" cy="12" r="4" fill="currentColor"/>
+    </svg>
+  `;
+
+  // window.addEventListener 대신 lenis.on을 사용합니다.
+  lenis.on("scroll", ({ scroll }) => {
+    const currentScrollY = scroll;
+    if (Math.abs(currentScrollY - lastScrollY) > STEP_DISTANCE) {
+      createEnhancedFootprint(currentScrollY > lastScrollY ? "down" : "up");
+      lastScrollY = currentScrollY;
+      isLeftStep = !isLeftStep;
+    }
+  });
+
+  function createEnhancedFootprint(direction: "up" | "down") {
+    if (!container) return;
+
+    const footprint = document.createElement("div");
+    footprint.className = "absolute pointer-events-none";
+    footprint.innerHTML = footprintSVG;
+
+    // 화면 좌우 랜덤 배치
+    const baseOffset = isLeftStep ? 30 : 70;
+    const randomChaos = (Math.random() - 0.5) * 15;
+    const xPos = baseOffset + randomChaos;
+
+    footprint.style.left = `${xPos}%`;
+    // 화면 중앙(50vh)에 배치하여 사용자가 스크롤할 때 눈앞에서 찍히게 함
+    footprint.style.top = `50vh`;
+
+    container.appendChild(footprint);
+
+    const tl = gsap.timeline({
+      onComplete: () => footprint.remove(),
+    });
+
+    tl.fromTo(
+      footprint,
+      {
+        scale: 2,
+        opacity: 0,
+        rotate: (direction === "down" ? 180 : 0) + (isLeftStep ? -20 : 20),
+      },
+      {
+        scale: 1,
+        opacity: 1, // 확실히 보이게 1로 설정!
+        duration: 0.3,
+        ease: "back.out(3)",
+      },
+    ).to(footprint, {
+      opacity: 0,
+      y: direction === "down" ? -50 : 50, // 스크롤 방향 반대로 밀려나며 사라짐
+      duration: 1.5,
+      delay: 0.5,
+      ease: "power2.in",
+    });
+  }
+</script>

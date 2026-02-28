@@ -1,0 +1,47 @@
+<div id="footprint-container" class="fixed inset-0 pointer-events-none z-40">
+</div>
+
+<script>
+  import { gsap } from "gsap";
+
+  const container = document.querySelector("#footprint-container");
+  let lastScrollY = 0;
+  const STEP_DISTANCE = 200;
+
+  window.addEventListener("scroll", () => {
+    const currentScrollY = window.scrollY;
+    if (Math.abs(currentScrollY - lastScrollY) > STEP_DISTANCE) {
+      createFootprint(currentScrollY > lastScrollY ? "down" : "up");
+      lastScrollY = currentScrollY;
+    }
+  });
+
+  function createFootprint(direction: "up" | "down") {
+    const footprint = document.createElement("div");
+    footprint.className = "absolute w-6 h-6 text-white/10 opacity-0";
+    footprint.innerHTML = `🐾`; // SVG로 교체 권장
+
+    const xPos = Math.random() * 100;
+    const yPos = 50; // 뷰포트 중앙 기준
+
+    footprint.style.left = `${xPos}%`;
+    footprint.style.top = `${yPos}vh`;
+    footprint.style.transform = `rotate(${direction === "down" ? 180 : 0}deg)`;
+
+    container?.appendChild(footprint);
+
+    gsap.to(footprint, {
+      opacity: 0.3,
+      scale: 1.5,
+      duration: 0.5,
+      onComplete: () => {
+        gsap.to(footprint, {
+          opacity: 0,
+          delay: 1,
+          duration: 2,
+          onComplete: () => footprint.remove(),
+        });
+      },
+    });
+  }
+</script>

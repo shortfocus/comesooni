@@ -1,0 +1,45 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "comesooni" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ko" class="bg-[#0A0A0A] text-white">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="description"
+      content="깜순이 팬 페이지 - 검은 강아지 깜순이의 일상 갤러리"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <link
+      rel="stylesheet"
+      as="style"
+      crossorigin
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
+    />
+    <slot name="head" />
+  </head>
+  <body class="antialiased overflow-x-hidden">
+    <slot />
+
+    <script>
+      import { initLenis } from "../scripts/lenis-init";
+
+      // 페이지가 로드되면 Lenis 초기화
+      window.addEventListener("DOMContentLoaded", () => {
+        initLenis();
+      });
+
+      // (선택) 만약 View Transitions를 사용한다면 아래 이벤트도 추가
+      // document.addEventListener('astro:after-swap', initLenis);
+    </script>
+  </body>
+</html>
