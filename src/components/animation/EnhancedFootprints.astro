@@ -1,6 +1,6 @@
 <div
   id="footprint-container"
-  class="fixed inset-0 pointer-events-none z-[99999] mix-blend-screen"
+  class="fixed inset-0 pointer-events-none z-[9999]"
 >
 </div>
 
@@ -10,14 +10,13 @@
   const container = document.querySelector("#footprint-container");
   let lastScrollY = 0;
   let isLeftStep = true;
+  let stepIndex = 0;
+  const TOTAL_STEPS = 8;
+  const STOP_LIMIT = 800; // 이 지점 이후로는 산책 중단
 
-  // 🐾 대각선 이동을 위한 변수들
-  let stepIndex = 0; // 몇 번째 발걸음인지 기록
-  const TOTAL_STEPS = 5; // 몇 번 걸어야 대각선을 횡단할 것인가
-  const STEP_DISTANCE = 200; // 발자국 사이의 스크롤 간격
-
+  // 존재감 있는 크기와 묵직한 다크 그레이 컬러
   const footprintSVG = `
-    <svg viewBox="0 0 30 30" style="width: 40px; height: 40px; color: #FBBF24; filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));">
+    <svg viewBox="0 0 30 30" style="width: 65px; height: 65px; color: #1A1A1A; opacity: 0.8;">
       <circle cx="15" cy="22" r="6" fill="currentColor"/>
       <circle cx="7" cy="12" r="4" fill="currentColor"/>
       <circle cx="15" cy="7" r="4.5" fill="currentColor"/>
@@ -25,72 +24,53 @@
     </svg>
   `;
 
-  function createFootprint(direction: "up" | "down") {
-    if (!container) return;
+  function createFootprint() {
+    if (!container || window.scrollY > STOP_LIMIT) return;
 
     const footprint = document.createElement("div");
-    footprint.className = "absolute pointer-events-none opacity-0";
+    footprint.className = "absolute pointer-events-none";
     footprint.innerHTML = footprintSVG;
 
-    // 🐾 1. 대각선 기본 경로 계산 (Linear Interpolation)
     const progress = stepIndex / TOTAL_STEPS;
-
-    // 좌하단(10, 90) -> 우상단(90, 10) 경로
-    let xPos = 10 + progress * 80;
-    let yPos = 90 - progress * 80;
-
-    // 🐾 2. 강아지의 '좌우 보폭' 추가 (Natural Gait)
-    const sideOffset = 5; // 좌우로 벌어지는 정도
-    const drift = isLeftStep ? -sideOffset : sideOffset;
-
-    // 대각선 방향(45도)에 수직인 방향으로 살짝씩 벌려줌
-    xPos += drift;
-    yPos += drift;
-
-    // 🐾 3. 미세한 랜덤성 (똑바른 선이 아니게)
-    xPos += (Math.random() - 0.5) * 5;
-    yPos += (Math.random() - 0.5) * 5;
+    // 대각선 경로: 좌하단 -> 우상단
+    let xPos = 15 + progress * 70;
+    let yPos = 85 - progress * 70;
 
     footprint.style.left = `${xPos}%`;
     footprint.style.top = `${yPos}vh`;
     footprint.style.transform = `translate(-50%, -50%)`;
 
     container.appendChild(footprint);
+    stepIndex++;
 
-    // 다음 발자국을 위해 인덱스 증가 (한 바퀴 다 돌면 초기화)
-    stepIndex = (stepIndex + 1) % (TOTAL_STEPS + 1);
-
-    const tl = gsap.timeline({
-      onComplete: () => footprint.remove(),
-    });
-
-    // 방향에 따라 발자국 각도 조절 (대각선 방향인 -45도 정도로 기본 회전)
-    const baseRotation = -45;
-
-    tl.to(footprint, {
-      opacity: 0.8,
-      scale: 1,
-      startAt: { scale: 1.6, opacity: 0 },
-      rotate: baseRotation + (isLeftStep ? -10 : 10),
-      duration: 0.4,
-      ease: "back.out(2)",
-    }).to(footprint, {
-      opacity: 0,
-      scale: 0.6,
-      duration: 2,
-      delay: 1.5,
-      ease: "power2.inOut",
-    });
+    gsap.fromTo(
+      footprint,
+      { scale: 1.3, opacity: 0, rotate: isLeftStep ? -10 : 10 },
+      {
+        scale: 1,
+        opacity: 0.3,
+        duration: 0.5,
+        ease: "power2.out",
+        onComplete: () => {
+          gsap.to(footprint, {
+            opacity: 0,
+            delay: 1.5,
+            duration: 1,
+            onComplete: () => footprint.remove(),
+          });
+        },
+      },
+    );
+    isLeftStep = !isLeftStep;
   }
 
   const attachToLenis = () => {
     const lenis = (window as any).lenis;
     if (lenis) {
       lenis.on("scroll", ({ scroll }: any) => {
-        if (Math.abs(scroll - lastScrollY) > STEP_DISTANCE) {
-          createFootprint(scroll > lastScrollY ? "down" : "up");
+        if (Math.abs(scroll - lastScrollY) > 160) {
+          createFootprint();
           lastScrollY = scroll;
-          isLeftStep = !isLeftStep;
         }
       });
     } else {

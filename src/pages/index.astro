@@ -2,91 +2,178 @@
 import Layout from "../layouts/Layout.astro";
 import EnhancedFootprints from "../components/animation/EnhancedFootprints.astro";
 
-// 가상 데이터 (추후 D1에서 가져올 예정)
+// 아카이브 데이터
 const photos = [
   {
     id: 1,
-    url: "https://via.placeholder.com/600x800",
-    title: "산책 중인 깜순이",
+    url: "https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=1000",
+    title: "산책 중인 Comesooni",
+    desc: "01 / ARCHIVE",
   },
-  { id: 2, url: "https://via.placeholder.com/800x600", title: "잠자는 깜순이" },
+  {
+    id: 2,
+    url: "https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?q=80&w=1000",
+    title: "잠자는 Comesooni",
+    desc: "02 / ARCHIVE",
+  },
   {
     id: 3,
-    url: "https://via.placeholder.com/700x900",
-    title: "간식 먹는 깜순이",
+    url: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?q=80&w=1000",
+    title: "간식 먹는 Comesooni",
+    desc: "03 / ARCHIVE",
+  },
+  {
+    id: 4,
+    url: "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1000",
+    title: "최고의 순간",
+    desc: "04 / ARCHIVE",
   },
 ];
 ---
 
-<Layout title="깜순이 | Kkamsoon Archive">
+<Layout title="Comesooni | Digital Archive">
   <EnhancedFootprints />
 
-  <section
-    class="h-screen flex items-center justify-center sticky top-0 bg-[#0A0A0A] z-10"
-  >
-    <h1
-      id="hero-text"
-      class="text-9xl font-black tracking-tighter uppercase select-none"
+  <main class="bg-[#FAF9F6] text-[#1A1A1A]">
+    <section
+      class="h-screen flex flex-col items-center justify-center relative overflow-hidden"
     >
-      Kkamsoon
-    </h1>
-  </section>
-
-  <section
-    id="horizontal-gallery"
-    class="relative h-[400vh] bg-white text-black"
-  >
-    <div class="sticky top-0 h-screen flex items-center overflow-hidden">
-      <div id="gallery-track" class="flex gap-10 px-[10vw]">
-        {
-          photos.map((photo) => (
-            <div class="flex-shrink-0 w-[60vw] md:w-[30vw] h-[60vh] bg-gray-200 rounded-2xl overflow-hidden shadow-2xl">
-              <img
-                src={photo.url}
-                alt={photo.title}
-                class="w-full h-full object-cover"
-              />
-            </div>
-          ))
-        }
+      <h1
+        id="hero-text"
+        class="text-[14vw] font-black tracking-[calc(-0.06em)] uppercase leading-[0.8] select-none text-[#1A1A1A]"
+      >
+        Comesooni
+      </h1>
+      <div class="mt-16 flex items-center gap-6 opacity-30">
+        <span class="w-16 h-[2px] bg-current"></span>
+        <p class="text-sm tracking-[0.5em] uppercase font-bold">The Archive</p>
+        <span class="w-16 h-[2px] bg-current"></span>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <footer
-    class="h-screen flex flex-col items-center justify-center bg-[#0A0A0A] text-white/50"
-  >
-    <p class="text-xl">Love you, Kkamsoon</p>
-    <a
-      href="https://instagram.com/kkamsoon"
-      class="mt-4 hover:text-white transition-colors">Follow on Instagram</a
+    <section id="horizontal-gallery" class="relative h-[500vh]">
+      <div class="sticky top-0 h-screen flex items-center overflow-hidden">
+        <div id="gallery-track" class="flex gap-[12vw] px-[18vw] items-center">
+          {
+            photos.map((photo) => (
+              <div class="gallery-item flex-shrink-0 w-[85vw] md:w-[48vw] group">
+                <div class="relative aspect-[16/10] overflow-hidden rounded-sm bg-gray-200 shadow-sm transition-transform duration-700 group-hover:scale-[1.015]">
+                  <img
+                    src={photo.url}
+                    alt={photo.title}
+                    class="gallery-img w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-[1.2s] ease-out scale-105 group-hover:scale-100"
+                  />
+                </div>
+
+                <div class="mt-10 flex justify-between items-end border-b border-black/10 pb-6">
+                  <div class="space-y-1">
+                    <span class="text-[10px] font-mono tracking-widest opacity-40 block">
+                      {photo.desc}
+                    </span>
+                    <h3 class="text-3xl md:text-4xl font-light italic tracking-tight text-[#222]">
+                      {photo.title}
+                    </h3>
+                  </div>
+                  <div class="hidden md:block">
+                    <svg
+                      width="40"
+                      height="40"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      class="opacity-10 group-hover:opacity-100 transition-opacity duration-500"
+                    >
+                      <path
+                        d="M7 17L17 7M17 7H7M17 7V17"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <footer
+      class="h-[80vh] flex flex-col items-center justify-center border-t border-black/5 bg-white/50"
     >
-  </footer>
+      <div class="text-center space-y-8">
+        <p class="text-[11px] opacity-30 tracking-[0.6em] uppercase">
+          Always with Comesooni
+        </p>
+        <h2
+          class="text-4xl md:text-6xl font-black tracking-tighter uppercase opacity-10"
+        >
+          Comesooni
+        </h2>
+        <div
+          class="flex gap-16 text-[12px] font-bold tracking-[0.2em] opacity-60"
+        >
+          <a href="#" class="hover:text-black hover:opacity-100 transition-all"
+            >INSTAGRAM</a
+          >
+          <a href="#" class="hover:text-black hover:opacity-100 transition-all"
+            >YOUTUBE</a
+          >
+          <a href="#" class="hover:text-black hover:opacity-100 transition-all"
+            >CONTACT</a
+          >
+        </div>
+      </div>
+    </footer>
+  </main>
 
   <script>
     import { gsap } from "gsap";
     import { ScrollTrigger } from "gsap/ScrollTrigger";
     gsap.registerPlugin(ScrollTrigger);
 
-    // 가로 스크롤 애니메이션
     const track = document.querySelector("#gallery-track");
-    gsap.to(track, {
-      x: () =>
-        -(track!.scrollWidth - window.innerWidth + window.innerWidth * 0.2),
-      ease: "none",
-      scrollTrigger: {
-        trigger: "#horizontal-gallery",
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1,
-        invalidateOnRefresh: true,
-      },
-    });
 
-    // 히어로 텍스트 페이드아웃 효과
+    if (track) {
+      // 1. 메인 가로 스크롤 설정
+      const horizontalTween = gsap.to(track, {
+        x: () =>
+          -(track.scrollWidth - window.innerWidth + window.innerWidth * 0.2),
+        ease: "none",
+        scrollTrigger: {
+          trigger: "#horizontal-gallery",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1,
+          pin: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      // 2. 이미지 개별 패럴랙스
+      const images = gsap.utils.toArray(".gallery-img");
+      images.forEach((img: any) => {
+        gsap.to(img, {
+          xPercent: -10,
+          ease: "none",
+          scrollTrigger: {
+            trigger: img,
+            containerAnimation: horizontalTween,
+            start: "left right",
+            end: "right left",
+            scrub: true,
+          },
+        });
+      });
+    }
+
+    // 3. 히어로 텍스트: 사라질 때 스케일 업 + 블러 효과
     gsap.to("#hero-text", {
+      y: -120,
       opacity: 0,
-      scale: 2,
+      scale: 1.1,
+      filter: "blur(25px)",
       scrollTrigger: {
         trigger: "#horizontal-gallery",
         start: "top bottom",
@@ -94,5 +181,23 @@ const photos = [
         scrub: true,
       },
     });
+
+    // 4. 페이지 로드 시 리프레시
+    window.addEventListener("load", () => {
+      ScrollTrigger.refresh();
+    });
   </script>
 </Layout>
+
+<style>
+  /* 텍스트 렌더링 최적화 */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1 {
+    /* Bold 폰트가 더 꽉 차 보이게 하기 위한 디테일 */
+    word-spacing: -0.1em;
+  }
+</style>
