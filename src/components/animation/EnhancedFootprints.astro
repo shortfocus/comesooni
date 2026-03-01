@@ -41,6 +41,27 @@
     footprint.style.transform = `translate(-50%, -50%)`;
 
     container.appendChild(footprint);
+
+    // 파티클 (흙먼지/반짝이) 효과 추가
+    for (let i = 0; i < 3; i++) {
+      const particle = document.createElement("div");
+      particle.className =
+        "absolute w-1.5 h-1.5 rounded-full bg-[#1A1A1A] opacity-40 pointer-events-none";
+      particle.style.left = `${xPos}%`;
+      particle.style.top = `${yPos}vh`;
+      container.appendChild(particle);
+
+      gsap.to(particle, {
+        x: `random(-30, 30)`,
+        y: `random(-30, 30)`,
+        opacity: 0,
+        scale: `random(0.5, 1.5)`,
+        duration: `random(0.6, 1)`,
+        ease: "power2.out",
+        onComplete: () => particle.remove(),
+      });
+    }
+
     stepIndex++;
 
     gsap.fromTo(

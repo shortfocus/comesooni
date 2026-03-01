@@ -1,0 +1,65 @@
+<div
+    id="preloader"
+    class="fixed inset-0 z-[10001] flex flex-col items-center justify-center bg-[#1A1A1A] text-[#FAF9F6]"
+>
+    <!-- 깜순이 아이콘 혹은 로고 텍스트 애니메이션 공간 -->
+    <div class="overflow-hidden mb-4">
+        <div id="loader-icon" class="text-6xl">🐾</div>
+    </div>
+
+    <div class="overflow-hidden">
+        <h2
+            id="loader-text"
+            class="text-2xl font-black tracking-widest uppercase"
+        >
+            COMESOONI
+        </h2>
+    </div>
+
+    <div class="w-48 h-1 bg-white/20 mt-8 rounded-full overflow-hidden">
+        <div id="loader-progress" class="h-full bg-white w-0 rounded-full">
+        </div>
+    </div>
+</div>
+
+<script>
+    import { gsap } from "gsap";
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const tl = gsap.timeline();
+
+        // 1. 발바닥 아이콘 바운스
+        tl.fromTo(
+            "#loader-icon",
+            { y: 50, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, ease: "back.out(1.7)" },
+        )
+            // 2. 텍스트 등장
+            .fromTo(
+                "#loader-text",
+                { y: 40 },
+                { y: 0, duration: 0.5, ease: "power3.out" },
+                "-=0.2",
+            )
+            // 3. 프로그레스 바 차오름 (가짜 로딩)
+            .to("#loader-progress", {
+                width: "100%",
+                duration: 1.2,
+                ease: "power2.inOut",
+            })
+            // 4. 아이콘과 텍스트 위로 사라짐
+            .to(["#loader-icon", "#loader-text"], {
+                y: -50,
+                opacity: 0,
+                duration: 0.4,
+                stagger: 0.1,
+                ease: "power2.in",
+            })
+            // 5. 전체 배경 위로 트랜지션
+            .to("#preloader", {
+                yPercent: -100,
+                duration: 0.8,
+                ease: "expo.inOut",
+            });
+    });
+</script>

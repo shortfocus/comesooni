@@ -1,0 +1,87 @@
+<div
+    id="custom-cursor"
+    class="pointer-events-none fixed left-0 top-0 z-[10000] hidden mix-blend-difference md:block"
+>
+    <div class="cursor-dot relative flex items-center justify-center">
+        <!-- 기본 발바닥 형태 SVG (간단한 원형 조합) -->
+        <svg
+            viewBox="0 0 30 30"
+            class="w-8 h-8 text-white transition-transform duration-300 ease-out"
+            id="cursor-svg"
+        >
+            <circle cx="15" cy="22" r="6" fill="currentColor"></circle>
+            <circle cx="8" cy="14" r="4" fill="currentColor"></circle>
+            <circle cx="15" cy="9" r="4.5" fill="currentColor"></circle>
+            <circle cx="22" cy="14" r="4" fill="currentColor"></circle>
+        </svg>
+    </div>
+</div>
+
+<script>
+    import { gsap } from "gsap";
+
+    const cursor = document.getElementById("custom-cursor");
+    const cursorSvg = document.getElementById("cursor-svg");
+
+    if (cursor && cursorSvg) {
+        // 마우스 이동에 따라 커서 위치 업데이트
+        const xTo = gsap.quickTo(cursor, "x", {
+            duration: 0.15,
+            ease: "power3",
+        });
+        const yTo = gsap.quickTo(cursor, "y", {
+            duration: 0.15,
+            ease: "power3",
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            // SVG 중앙 정렬 보정 (w-8 h-8 = 32px => -16px)
+            xTo(e.clientX - 16);
+            yTo(e.clientY - 16);
+        });
+
+        // 호버 가능한 요소들 (링크, 버튼, 이미지 등)
+        const hoverElements = document.querySelectorAll(
+            "a, button, img, .gallery-item",
+        );
+
+        hoverElements.forEach((el) => {
+            el.addEventListener("mouseenter", () => {
+                gsap.to(cursorSvg, {
+                    scale: 1.5,
+                    rotate: 15,
+                    duration: 0.3,
+                    ease: "back.out(2)",
+                });
+            });
+
+            el.addEventListener("mouseleave", () => {
+                gsap.to(cursorSvg, {
+                    scale: 1,
+                    rotate: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                });
+            });
+        });
+
+        // 클릭 시 파동 효과
+        window.addEventListener("mousedown", () => {
+            gsap.to(cursorSvg, { scale: 0.8, duration: 0.1 });
+        });
+        window.addEventListener("mouseup", () => {
+            gsap.to(cursorSvg, { scale: 1, duration: 0.2, ease: "bounce.out" });
+        });
+    }
+</script>
+
+<style>
+    /* 기본 커서 숨기기 (데스크톱에서만) */
+    @media (min-width: 768px) {
+        :global(body),
+        :global(a),
+        :global(button) {
+            cursor: none !important;
+        }
+    }
+</style>

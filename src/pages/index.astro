@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import EnhancedFootprints from "../components/animation/EnhancedFootprints.astro";
+import Preloader from "../components/animation/Preloader.astro";
 
 // 아카이브 데이터
 const photos = [
@@ -32,19 +33,36 @@ const photos = [
 ---
 
 <Layout title="Comesooni | Digital Archive">
+  <Preloader />
   <EnhancedFootprints />
 
   <main class="bg-[#FAF9F6] text-[#1A1A1A]">
     <section
       class="h-screen flex flex-col items-center justify-center relative overflow-hidden"
     >
+      <!-- 떠다니는 배경 오브젝트 -->
+      <div class="absolute inset-0 pointer-events-none opacity-20">
+        <div class="floating-obj absolute top-[20%] left-[15%] text-6xl">
+          🦴
+        </div>
+        <div class="floating-obj absolute top-[60%] left-[10%] text-5xl">
+          🐾
+        </div>
+        <div class="floating-obj absolute top-[30%] right-[15%] text-6xl">
+          ⚽
+        </div>
+        <div class="floating-obj absolute bottom-[20%] right-[20%] text-7xl">
+          🦴
+        </div>
+      </div>
+
       <h1
         id="hero-text"
-        class="text-[14vw] font-black tracking-[calc(-0.06em)] uppercase leading-[0.8] select-none text-[#1A1A1A]"
+        class="text-[14vw] font-black tracking-[calc(-0.06em)] uppercase leading-[0.8] select-none text-[#1A1A1A] z-10 flex"
       >
         Comesooni
       </h1>
-      <div class="mt-16 flex items-center gap-6 opacity-30">
+      <div class="mt-16 flex items-center gap-6 opacity-30 z-10">
         <span class="w-16 h-[2px] bg-current"></span>
         <p class="text-sm tracking-[0.5em] uppercase font-bold">The Archive</p>
         <span class="w-16 h-[2px] bg-current"></span>
@@ -100,9 +118,10 @@ const photos = [
     </section>
 
     <footer
-      class="h-[80vh] flex flex-col items-center justify-center border-t border-black/5 bg-white/50"
+      id="dynamic-footer"
+      class="h-[80vh] flex flex-col items-center justify-center border-t border-black/5 bg-white/50 relative overflow-hidden"
     >
-      <div class="text-center space-y-8">
+      <div class="text-center space-y-8 z-10">
         <p class="text-[11px] opacity-30 tracking-[0.6em] uppercase">
           Always with Comesooni
         </p>
@@ -114,16 +133,30 @@ const photos = [
         <div
           class="flex gap-16 text-[12px] font-bold tracking-[0.2em] opacity-60"
         >
-          <a href="#" class="hover:text-black hover:opacity-100 transition-all"
+          <a
+            href="#"
+            class="hover:text-black hover:opacity-100 transition-all cursor-pointer"
             >INSTAGRAM</a
           >
-          <a href="#" class="hover:text-black hover:opacity-100 transition-all"
+          <a
+            href="#"
+            class="hover:text-black hover:opacity-100 transition-all cursor-pointer"
             >YOUTUBE</a
           >
-          <a href="#" class="hover:text-black hover:opacity-100 transition-all"
+          <a
+            href="#"
+            class="hover:text-black hover:opacity-100 transition-all cursor-pointer"
             >CONTACT</a
           >
         </div>
+      </div>
+
+      <!-- 빼꼼 나오는 깜순이 -->
+      <div
+        id="peeking-dog"
+        class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full text-[120px] leading-none z-0 opacity-50"
+      >
+        🐶
       </div>
     </footer>
   </main>
@@ -134,6 +167,34 @@ const photos = [
     gsap.registerPlugin(ScrollTrigger);
 
     const track = document.querySelector("#gallery-track");
+
+    // 히어로 텍스트 통통 튀며 나타나게 하기 (글자 하나씩 분리)
+    const heroText = document.querySelector("#hero-text");
+    if (heroText && heroText.textContent) {
+      const chars = heroText.textContent.trim().split("");
+      heroText.innerHTML = "";
+      chars.forEach((char) => {
+        const span = document.createElement("span");
+        span.textContent = char;
+        span.className = "inline-block";
+        heroText.appendChild(span);
+      });
+
+      // Preloader 끝나는 시간에 맞춰 히어로 텍스트 애니메이션 시작
+      gsap.fromTo(
+        "#hero-text span",
+        { y: 100, opacity: 0, rotate: 15 },
+        {
+          y: 0,
+          opacity: 1,
+          rotate: 0,
+          duration: 0.8,
+          stagger: 0.05,
+          ease: "back.out(2)",
+          delay: 2,
+        },
+      );
+    }
 
     if (track) {
       // 1. 메인 가로 스크롤 설정
@@ -151,8 +212,10 @@ const photos = [
         },
       });
 
-      // 2. 이미지 개별 패럴랙스
+      // 2. 이미지 개별 패럴랙스 & 3D Tilt (마우스 무브)
       const images = gsap.utils.toArray(".gallery-img");
+      const galleryItems = document.querySelectorAll(".gallery-item");
+
       images.forEach((img: any) => {
         gsap.to(img, {
           xPercent: -10,
@@ -164,6 +227,37 @@ const photos = [
             end: "right left",
             scrub: true,
           },
+        });
+      });
+
+      // 3D Tilt Effect
+      galleryItems.forEach((item: any) => {
+        const imgWrapper = item.querySelector("div.relative");
+
+        item.addEventListener("mousemove", (e: MouseEvent) => {
+          const rect = item.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          const xPct = (x / rect.width - 0.5) * 2; // -1 to 1
+          const yPct = (y / rect.height - 0.5) * 2; // -1 to 1
+
+          gsap.to(imgWrapper, {
+            rotationY: xPct * 10,
+            rotationX: -yPct * 10,
+            transformPerspective: 1000,
+            ease: "power2.out",
+            duration: 0.5,
+          });
+        });
+
+        item.addEventListener("mouseleave", () => {
+          gsap.to(imgWrapper, {
+            rotationY: 0,
+            rotationX: 0,
+            ease: "power3.out",
+            duration: 0.8,
+          });
         });
       });
     }
@@ -182,7 +276,34 @@ const photos = [
       },
     });
 
-    // 4. 페이지 로드 시 리프레시
+    // 배경 부유물 부드러운 상하 이동 (떠다니는 효과)
+    gsap.to(".floating-obj", {
+      y: "random(-20, 20)",
+      rotation: "random(-15, 15)",
+      duration: "random(2, 4)",
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+      stagger: {
+        amount: 2,
+        from: "random",
+      },
+    });
+
+    // 4. 푸터에 도달 시 빼꼼 나오는 깜순이 (Peeking Dog)
+    gsap.to("#peeking-dog", {
+      y: 0,
+      opacity: 1,
+      ease: "power3.out",
+      scrollTrigger: {
+        trigger: "#dynamic-footer",
+        start: "top bottom",
+        end: "bottom bottom",
+        scrub: 1,
+      },
+    });
+
+    // 5. 페이지 로드 시 리프레시
     window.addEventListener("load", () => {
       ScrollTrigger.refresh();
     });

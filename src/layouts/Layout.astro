@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import CustomCursor from "../components/animation/CustomCursor.astro";
 
 interface Props {
   title?: string;
@@ -28,6 +29,7 @@ const { title = "comesooni" } = Astro.props;
     <slot name="head" />
   </head>
   <body class="antialiased overflow-x-hidden">
+    <CustomCursor />
     <slot />
 
     <script>
